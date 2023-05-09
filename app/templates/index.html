@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <title>Agent Manager</title>
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            color: #a6a8ac;
+            background-color: #16131A;
+            
+        }
+        .container {
+            background-color: #0A090D;
+            margin: 0 auto;
+            padding: 30px;
+            border: 2px solid #08070a;
+            border-radius: 17px;
+            max-width: 1200px;
+        }
+
+        .box {
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.37);
+        }
+
+        h1 {
+            color: #929292;
+            font-family: monospace;
+            font-size: 50px;
+        }
+        .form-control {
+            background-color: #16131A;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgb(103, 101, 104);
+
+
+        }
+
+        #apikey, #objective, #answer-textarea {
+            background-color: #16131A;
+            border: none;
+        }
+
+
+    </style>
+</head>
+<body>
+    <h1 class="text-center mt-3 mb-3">Agent Manager</h1>
+    <div class="container box">
+        <div class="openaiapi">
+            <label for="objective">1. Add OpenAI API Key</label>
+            <div class="d-flex">
+                <div class="w-100">
+            <input type="text" id="apikey" style="color:white" name="objective" class="form-control mb-3 w-100" placeholder="OPENAI API KEY" >
+                </div>
+                <button class="form-control mb-3 btn btn-dark w-25 mx-2" onclick="fnAddKey()">Add OpenAI Key</button>
+            </div>
+<!--            <label for="file-input"></label>-->
+<!--            <input type="file" id="file-input" name="file">-->
+        </div>
+
+        <div class="objective">
+            <label for="objective">2. Objective or select file to upload</label>
+            <div class="d-flex">
+                <div class="w-100">
+            <input type="text" id="objective" style="color:white" name="objective" class="form-control mb-3 w-100" placeholder="Objective" >
+                </div>
+                <button class="form-control mb-3 btn btn-dark w-25 mx-2" onclick="fnAddObjective()">Add Objective</button>
+            </div>
+<!--            <label for="file-input"></label>-->
+<!--            <input type="file" id="file-input" name="file">-->
+        </div>
+
+
+        <div class="previous-session mt-3">3. Do you want to restore the previous session?
+
+
+            <input type="radio" id="previous-yes" onclick="onClickRadioPreviousYes()" name="options_session" value="previous-yes">
+            <label for="previous-yes">Yes</label>
+
+
+            <input type="radio" id="previous-no" onclick="onClickRadioPreviousNo()" name="options_session" value="previous-no">
+            <label for="previous-no">No</label>
+
+        </div>
+        <div class="mode mt-3">4. Choose the mode
+
+            <input type="radio" id="manual" onclick="onClickRadioModeManual()" name="options_mode" value="manual">
+            <label for="manual">Manual</label>
+
+            <input type="radio" id="auto" onclick="onClickRadioModeAuto()" name="options_mode" value="auto">
+            <label for="auto">Auto</label>
+
+
+        </div>
+
+
+
+        <label for="answer-textarea">Tasks:</label>
+        <textarea id="answer-textarea" style="color:white" name="answer" class="form-control" rows="13"></textarea>
+
+
+        <!-- The modal -->
+<div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="feedbackModalLabel">Feedback</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Feedback form -->
+        <form>
+          <div class="form-group">
+            <label for="feedbackTextarea">Your feedback:</label>
+            <textarea class="form-control" id="feedbackTextarea" rows="3"></textarea>
+          </div>
+          <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" onclick="onClickFeedbackAutomode()" id="autoModeCheckbox">
+            <label class="form-check-label" for="autoModeCheckbox">Enable auto mode</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        <button type="button" class="btn btn-primary" onclick="onClickFeedbackYes()" id="yesBtn">Yes</button>
+        <button type="button" class="btn btn-primary" onclick="onClickFeedbackFeedback()" id="leaveFeedbackBtn">Leave Feedback</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--        <div class="continue mt-2">-->
+<!--            <p>Allow AI to continue?</p>-->
+<!--            <div>-->
+
+<!--                <label for="continue-yes">Yes</label>-->
+<!--                <input type="radio" id="continue-yes" name="continue" onclick="onClickFeedbackYes()" value="continue-yes">-->
+
+<!--                <label for="continue-no">No</label>-->
+<!--                <input type="radio" id="continue-no" name="continue" onclick="onClickFeedbackNo()" value="continue-no">-->
+
+<!--                <label for="auto">Auto Mode</label>-->
+<!--                <input type="radio" id="automode" name="continue" onclick="onClickFeedbackAutomode()" value="auto">-->
+
+<!--                <label for="feedback">Provide Feedback</label>-->
+<!--                <input type="radio" id="feedback" name="continue" onclick="onClickFeedbackFeedback()" value="feedback">-->
+
+<!--            </div>-->
+<!--        </div>-->
+    </div>
+<script>
+function fnAddKey(){
+
+    var api_key = document.getElementById("apikey");
+        var apikey_text = api_key.value;
+    fetch('/addapikey', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            apikey: apikey_text
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(data);
+          alert("Success Add your api key")
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+}
+    function fnAddObjective(){
+        var input_objective = document.getElementById("objective");
+        var objective_text = input_objective.value;
+                fetch('/objective', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            objective: objective_text
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(data);
+          alert("Success Add your objective")
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    function onClickFeedbackYes() {
+    var feedbackModal = document.getElementById("feedbackModal");
+
+            // Show the modal
+    $(feedbackModal).modal("hide");
+    const textarea = document.getElementById("answer-textarea");
+    textarea.innerHTML = ""
+        fetch('/feedback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            feedback: 'yes'
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+
+                    data = data.response;
+
+          str_result = JSON.stringify(data, null, 2);
+          console.log(data);
+          textarea.innerHTML = str_result;
+          console.log(data);
+        var feedbackModal = document.getElementById("feedbackModal");
+
+            // Show the modal
+           $(feedbackModal).modal("show");
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+    function onClickFeedbackAutomode() {
+        fetch('/feedback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            feedback: 'automode'
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(data);
+          alert("You select Auto mode");
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+    function onClickFeedbackFeedback() {
+        const text_feedback = document.getElementById("feedbackTextarea").value
+        const textarea = document.getElementById("answer-textarea");
+        textarea.innerHTML = ""
+          alert("Thank you for your feedback");
+          alert("Please wait until regenerate response");
+        var feedbackModal = document.getElementById("feedbackModal");
+
+            // Show the modal
+           $(feedbackModal).modal("hide");
+        fetch('/feedback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            feedback: text_feedback
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+                    data = data.response;
+
+          str_result = JSON.stringify(data, null, 2);
+          console.log(data);
+          textarea.innerHTML = str_result;
+          console.log(data);
+        var feedbackModal = document.getElementById("feedbackModal");
+
+            // Show the modal
+           $(feedbackModal).modal("show");
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    function onClickRadioPreviousYes() {
+        fetch('/session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            session: 'yes'
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(data);
+          alert("You will use previous session")
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    function onClickRadioPreviousNo() {
+        fetch('/session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            session: 'no'
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(data);
+          alert("You will use new session")
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    function onClickRadioModeManual() {
+            alert("Please wait until generate response....")
+
+        fetch('/mode', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            mode: 'm'
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+            data = data.response;
+
+          str_result = JSON.stringify(data, null, 2);
+          console.log(data);
+          const textarea = document.getElementById("answer-textarea");
+          textarea.innerHTML = str_result;
+          var feedbackModal = document.getElementById("feedbackModal");
+
+            // Show the modal
+           $(feedbackModal).modal("show");
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    function onClickRadioModeAuto() {
+            alert("Please wait until generate response....")
+
+        fetch('/mode', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            mode: 'a'
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+
+            data = data.response;
+          str_result = JSON.stringify(data, null, 2);
+          const textarea = document.getElementById("answer-textarea");
+          textarea.innerHTML = str_result;
+          console.log(data);
+          var feedbackModal = document.getElementById("feedbackModal");
+
+            // Show the modal
+            $(feedbackModal).modal("show");
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+</script>
+</body>
+</html>
